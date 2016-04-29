@@ -56,16 +56,6 @@
 
 using namespace rp::standalone::rplidar;
 
-<<<<<<< HEAD
-void convertXY(std::string FILENAME) {
-
-}
-void convertPolar() {
-
-}
-
-=======
->>>>>>> master
 bool checkRPLIDARHealth(RPlidarDriver * drv)
 {
 	u_result     op_result;
@@ -93,15 +83,15 @@ bool checkRPLIDARHealth(RPlidarDriver * drv)
 }
 
 int main(int argc, const char * argv[]) {
-<<<<<<< HEAD
+
     const char * opt_com_path = NULL;
     _u32         opt_com_baudrate = 115200;
     u_result     op_result;
-=======
+
 	const char * opt_com_path = NULL;
 	_u32         opt_com_baudrate = 115200;
 	u_result     op_result;
->>>>>>> master
+
 	int file = 1, flag = 1, num = 1;
 	float Ox, Oy;
 	float angle, distance;
@@ -161,11 +151,11 @@ int main(int argc, const char * argv[]) {
 		if (flag != 0) {
 
 			/* need to modify the following to receive telemetry data from the pixhawk
-			 * to calculate the distance moved by the scanner 
-			 */		
+			 * to calculate the distance moved by the scanner
+			 */
 			std::cout << "Enter scan origin offset x y (mm)" << std::endl;
 			std::cin >> Ox >> Oy;
-<<<<<<< HEAD
+
 			while (num > 0) {
 				std::ofstream myfile;
 				fname = "scan";
@@ -175,68 +165,55 @@ int main(int argc, const char * argv[]) {
 				myfile.open(fname, std::fstream::out | std::fstream::app);		//open file with name "scan_#"
 				//file++;
 
-=======
 
 
-			while (num > 0) { //number of scans
-				std::ofstream myfile;
-				fname = "scan";
 
-				myfile.open(fname, std::fstream::out | std::fstream::app);		//open file with name "scan_#"
-																				//file++;
->>>>>>> master
-				rplidar_response_measurement_node_t nodes[360 * 2];
-				size_t   count = _countof(nodes);
+				while (num > 0) { //number of scans
+					std::ofstream myfile;
+					fname = "scan";
 
-				op_result = drv->grabScanData(nodes, count);
-<<<<<<< HEAD
-				//myfile << Ox << '\0' << Oy << '\0' << std::endl;
-=======
->>>>>>> master
+					myfile.open(fname, std::fstream::out | std::fstream::app);		//open file with name "scan_#"
+																					//file++;
 
-				if (IS_OK(op_result)) {
-					drv->ascendScanData(nodes, count);
-					for (int pos = 0; pos < (int)count; ++pos) {
-						r = (nodes[pos].distance_q2 / 4.0f);
+					rplidar_response_measurement_node_t nodes[360 * 2];
+					size_t   count = _countof(nodes);
+
+					op_result = drv->grabScanData(nodes, count);
+
+					//myfile << Ox << '\0' << Oy << '\0' << std::endl;
+
+					if (IS_OK(op_result)) {
+						drv->ascendScanData(nodes, count);
+						for (int pos = 0; pos < (int)count; ++pos) {
+							r = (nodes[pos].distance_q2 / 4.0f);
 #ifdef FLOAT
-<<<<<<< HEAD
-=======
-						//polar to cartesian
->>>>>>> master
-						theta = ((nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
-						std::cout << theta << ' ' << r << std::endl;
-						x = r * cos(theta*0.0174533);
-						y = r * sin(theta*0.0174533);
-						std::cout << '\t' << x << ' ' << y << std::endl;
+
+							//polar to cartesian
+
+							theta = ((nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
+							std::cout << theta << ' ' << r << std::endl;
+							x = r * cos(theta*0.0174533);
+							y = r * sin(theta*0.0174533);
+							std::cout << '\t' << x << ' ' << y << std::endl;
 #else
-						theta = (int)((nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
+							theta = (int)((nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
 #endif
-<<<<<<< HEAD
-						x = x + Ox;
-						y = y + Oy;
+							x = x + Ox;
+							y = y + Oy;
 
-						angle = atan2(y,x);
-						angle = angle * 57.2958;
-						distance = sqrt(x*x + y*y);
+							angle = atan2(y, x);
+							angle = angle * 57.2958;
+							distance = sqrt(x*x + y*y);
 
-						//myfile << (nodes[pos].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) << '\0';
-						myfile << angle << ' ';
-						myfile << distance << std::endl;
-						//myfile << (nodes[pos].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT) << ' ';
-						//myfile << theta << ' ';
-						//myfile << r << ' ' << std::endl;
-						
-/*						printf("%s theta: %03.2f Dist: %08.2f Q: %d \n",
-							(nodes[pos].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) ? "S " : "  ",
-							(nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f,
-							nodes[pos].distance_q2 / 4.0f,
-							nodes[pos].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
-*/						}
-=======
+							myfile << angle << ' ';
+							myfile << distance << std::endl;
+
+						}
+
 						//add the offset to the cartesian
 						x = x + Ox;
 						y = y + Oy;
-						
+
 						//cartesian back to polar
 						angle = atan2(y, x);
 						angle = angle * 57.2958;
@@ -244,9 +221,8 @@ int main(int argc, const char * argv[]) {
 
 						//print to file
 						myfile << angle << ' ';
-						myfile << distance << std::endl; 
+						myfile << distance << std::endl;
 					}
->>>>>>> master
 				}
 				myfile.close();
 				num--;
@@ -256,50 +232,8 @@ int main(int argc, const char * argv[]) {
 			std::cin >> flag;
 		}
 		else break;
-<<<<<<< HEAD
-    }
-/*
-	while (1) {
-		std::ifstream infile("scan.txt");
-		std::ofstream myfile;
-		std::string line;
-
-		//_u8 quality;
-		float angle;
-		float distance;
-		float x2, y2;
-
-		myfile.open("scan", std::fstream::out | std::fstream::app);
-
-		while (std::getline(infile,line)) {
-			std::istringstream iss(line);
-			if (!(iss >> x2 >> y2)) break;
-			std::cout << x2 << ' ' << y2 << std::endl;
-			angle = atan((y2 / x2));
-			angle = angle * (180 / 3.1415926);
-			distance = sqrt((x2*x2) + (y2*y2));
-
-			if (!(iss >> angle >> distance)) break;
-			angle = round(angle);
-
-			myfile << angle << ' ';
-			myfile << distance << std::endl;
-			printf("Theta: %f Dist: %f \n", angle, distance);
-
-		}
-		myfile.close();
-		std::cout << "2 to quit ";
-		std::cin >> flag;
-		if (flag != 2);
-		else break;
 	}
-	*/
-
     // done!
-=======
-	}
-	// done!
->>>>>>> master
 on_finished:
 	RPlidarDriver::DisposeDriver(drv);
 	return 0;
