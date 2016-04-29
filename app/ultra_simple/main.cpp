@@ -45,11 +45,6 @@
 #define INT
 #endif
 
-#define FLOAT
-#ifndef FLOAT
-#define INT
-#endif
-
 #ifndef _countof
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
 #endif
@@ -83,11 +78,6 @@ bool checkRPLIDARHealth(RPlidarDriver * drv)
 }
 
 int main(int argc, const char * argv[]) {
-
-    const char * opt_com_path = NULL;
-    _u32         opt_com_baudrate = 115200;
-    u_result     op_result;
-
 	const char * opt_com_path = NULL;
 	_u32         opt_com_baudrate = 115200;
 	u_result     op_result;
@@ -156,18 +146,6 @@ int main(int argc, const char * argv[]) {
 			std::cout << "Enter scan origin offset x y (mm)" << std::endl;
 			std::cin >> Ox >> Oy;
 
-			while (num > 0) {
-				std::ofstream myfile;
-				fname = "scan";
-				//std::string String = static_cast<std::ostringstream*>(&(std::ostringstream() << file))->str();
-				//fname.append(String);
-
-				myfile.open(fname, std::fstream::out | std::fstream::app);		//open file with name "scan_#"
-				//file++;
-
-
-
-
 				while (num > 0) { //number of scans
 					std::ofstream myfile;
 					fname = "scan";
@@ -198,31 +176,20 @@ int main(int argc, const char * argv[]) {
 #else
 							theta = (int)((nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f);
 #endif
+							//add the offset to the cartesian
 							x = x + Ox;
 							y = y + Oy;
 
+							//cartesian back to polar
 							angle = atan2(y, x);
 							angle = angle * 57.2958;
 							distance = sqrt(x*x + y*y);
 
+							//print to file
 							myfile << angle << ' ';
 							myfile << distance << std::endl;
 
 						}
-
-						//add the offset to the cartesian
-						x = x + Ox;
-						y = y + Oy;
-
-						//cartesian back to polar
-						angle = atan2(y, x);
-						angle = angle * 57.2958;
-						distance = sqrt(x*x + y*y);
-
-						//print to file
-						myfile << angle << ' ';
-						myfile << distance << std::endl;
-					}
 				}
 				myfile.close();
 				num--;
@@ -230,8 +197,8 @@ int main(int argc, const char * argv[]) {
 			num = 1;
 			std::cout << "take next scan? (0) to quit ";		//check if there are more scans to take
 			std::cin >> flag;
-		}
-		else break;
+			}
+			else break;
 	}
     // done!
 on_finished:
